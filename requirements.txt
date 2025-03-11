@@ -1,0 +1,16 @@
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+mlflow
+pymongo
+from_root
+certifi
+imblearn
+python-dotenv
+ipykernel
+pymongo[srv]==3.11
+
+
+##-e .
