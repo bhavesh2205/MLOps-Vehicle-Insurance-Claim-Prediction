@@ -1,5 +1,5 @@
 import sys
-from src.logging import logger
+from src.logging.logger import logging
 
 
 class VehicleInsuranceException(Exception):
@@ -19,7 +19,7 @@ class VehicleInsuranceException(Exception):
 # example exception
 # if __name__ == "__main__":
 #    try:
-#       logger.logging.info("This is a test log")
+#        logging.info("This is a test log")
 #        a = 1 / 0
 #    except Exception as e:
-#       raise VehicleInsuranceException(e, sys)
+#        raise VehicleInsuranceException(e, sys)
