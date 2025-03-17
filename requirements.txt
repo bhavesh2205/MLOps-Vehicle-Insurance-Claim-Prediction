@@ -11,6 +11,7 @@ imblearn
 python-dotenv
 ipykernel
 pymongo[srv]==3.11
-
+dill
+pyaml
 
 ##-e .

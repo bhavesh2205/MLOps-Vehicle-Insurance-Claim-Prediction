@@ -38,3 +38,13 @@ class DataIngestionConfig:
         )
         self.collection_name: str = constant.DATA_INGESTION_COLLECTION_NAME
         self.database_name: str = constant.DATA_INGESTION_DATABASE_NAME
+
+
+class DataValidationConfig:
+    def __init__(self, training_pipeline_config: TrainingPipelineConfig):
+        self.data_validation_dir = os.path.join(
+            training_pipeline_config.artifact_dir, constant.DATA_VALIDATION_DIR_NAME
+        )
+        self.validation_report_file_path = os.path.join(
+            self.data_validation_dir, constant.DATA_VALIDATION_REPORT_FILE_NAME
+        )
