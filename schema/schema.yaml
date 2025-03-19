@@ -6,17 +6,17 @@ columns:
   - education: category
   - income: category
   - credit_score: float
-  - vehicle_ownership: float
+  - vehicle_ownership: int
   - vehicle_year: category
-  - married: float
-  - children: float
+  - married: int
+  - children: int
   - postal_code: int
   - annual_mileage: float
   - vehicle_type: category
   - speeding_violations: int
   - duis: int
   - past_accidents: int
-  - outcome: float
+  - outcome: int
 
 
 numerical_columns:
@@ -41,13 +41,23 @@ categorical_columns:
   - vehicle_year
   - vehicle_type
 
-drop_columns: _id
+ordinal_features:
+  - driving_experience
+  - education
+  - income
 
-#data transformation
-num_features:
+onehot_features:
+  - vehicle_year
+  - vehicle_type
+
+drop_columns:
+  - id
+  - postal_code
+
+# missing value columns
+impute_features:
   - credit_score
   - annual_mileage
 
-
-target_columns:
+target_column:
   - outcome
