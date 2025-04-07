@@ -1,146 +1,189 @@
+import sys
+from typing import Tuple
+
+import numpy as np
 import mlflow
-import sys, os
+import mlflow.sklearn
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
 from src.exception.exception import VehicleInsuranceException
 from src.logging.logger import logging
-import numpy as np
-
-from src.entity.config_entity import ModelTrainingConfig
-from src.entity.artifact_entity import DataTransformationArtifact, ModelTrainerArtifact, ClassificationMetricArtifact
-from src.utils.main_utils import load_numpy_array_data, load_object, save_object, evaluate_model
-from src.utils.ml_utils.metric.classification_metric import get_classification_score
-from src.utils.ml_utils.model.estimator import InsuranceModel
-
-from sklearn.metrics import recall_score
-from sklearn.ensemble import (
-    AdaBoostClassifier,
-    GradientBoostingClassifier,
-    RandomForestClassifier
+from src.utils.main_utils import load_numpy_array_data, load_object, save_object
+from src.entity.config_entity import ModelTrainerConfig
+from src.entity.artifact_entity import (
+    DataTransformationArtifact,
+    ModelTrainerArtifact,
+    ClassificationMetricArtifact,
 )
+from src.entity.estimator import MyModel
 
-import dagshub
-dagshub.init(repo_owner='imbhavesh7', repo_name='MLOps-Vehicle-Insurance-Claim-Prediction', mlflow=True)
 
 class ModelTrainer:
-    def __init__(self, model_trainer_config: ModelTrainingConfig, data_transformation_artifact: DataTransformationArtifact):
+    def __init__(
+        self,
+        data_transformation_artifact: DataTransformationArtifact,
+        model_trainer_config: ModelTrainerConfig,
+    ):
+        """
+        :param data_transformation_artifact: Output reference of data transformation artifact stage
+        :param model_trainer_config: Configuration for model training
+        """
+        self.data_transformation_artifact = data_transformation_artifact
+        self.model_trainer_config = model_trainer_config
+        # Initialize MLflow tracking
+        mlflow.set_tracking_uri("http://localhost:5000")
+        mlflow.set_experiment("Vehicle Insurance Claim Prediction")
+
+    def get_model_object_and_report(
+        self, train: np.array, test: np.array
+    ) -> Tuple[object, object]:
+        """
+        Method Name :   get_model_object_and_report
+        Description :   This function trains a RandomForestClassifier with specified parameters
+
+        Output      :   Returns metric artifact object and trained model object
+        On Failure  :   Write an exception log and then raise an exception
+        """
         try:
-            logging.info("Initializing ModelTrainer class")
-            self.model_trainer_config = model_trainer_config
-            self.data_transformation_artifact = data_transformation_artifact
-        except Exception as e:
-            logging.error(f"Error in initializing ModelTrainer: {str(e)}")
-            raise VehicleInsuranceException(e, sys)
-        
-    def track_mlflow(self, best_model, classificationmetric):
+            logging.info("Training RandomForestClassifier with specified parameters")
+
+            # Splitting the train and test data into features and target variables
+            x_train, y_train, x_test, y_test = (
+                train[:, :-1],
+                train[:, -1],
+                test[:, :-1],
+                test[:, -1],
+            )
+            logging.info("train-test split done.")
+
+            # Start MLflow run
             with mlflow.start_run():
-                f1_score=classificationmetric.f1_score
-                precision_score=classificationmetric.precision_score
-                recall_score=classificationmetric.recall_score
-                
-                mlflow.log_metric("f1_score", f1_score)
-                mlflow.log_metric("precision", precision_score)
-                mlflow.log_metric("recall", recall_score)
-                mlflow.sklearn.log_model(best_model,"model")
+                # Log model parameters
+                mlflow.log_params({
+                        "n_estimators": self.model_trainer_config._n_estimators,
+                        "min_samples_split": self.model_trainer_config._min_samples_split,
+                        "min_samples_leaf": self.model_trainer_config._min_samples_leaf,
+                        "max_depth": self.model_trainer_config._max_depth,
+                        "criterion": self.model_trainer_config._criterion,
+                        "max_features": self.model_trainer_config._max_features,
+                        "bootstrap": self.model_trainer_config._bootstrap,
+                        "oob_score": self.model_trainer_config._oob_score,
+                        "random_state": self.model_trainer_config._random_state,
+                    })
+
+                # Initialize RandomForestClassifier with specified parameters
+                model = RandomForestClassifier(
+                            n_estimators=self.model_trainer_config._n_estimators,
+                            min_samples_split=self.model_trainer_config._min_samples_split,
+                            min_samples_leaf=self.model_trainer_config._min_samples_leaf,
+                            max_depth=self.model_trainer_config._max_depth,
+                            criterion=self.model_trainer_config._criterion,
+                            max_features=self.model_trainer_config._max_features,
+                            bootstrap=self.model_trainer_config._bootstrap,
+                            oob_score=self.model_trainer_config._oob_score,
+                            random_state=self.model_trainer_config._random_state,
+                        )
+
+
+                # Fit the model
+                logging.info("Model training going on...")
+                model.fit(x_train, y_train)
+                logging.info("Model training done.")
+
+                # Predictions and evaluation metrics
+                y_pred = model.predict(x_test)
+                accuracy = accuracy_score(y_test, y_pred)
+                f1 = f1_score(y_test, y_pred)
+                precision = precision_score(y_test, y_pred)
+                recall = recall_score(y_test, y_pred)
+
+                # Log metrics
+                mlflow.log_metrics(
+                    {
+                        "accuracy": accuracy,
+                        "f1_score": f1,
+                        "precision": precision,
+                        "recall": recall,
+                    }
+                )
+
+                # Log model
+                mlflow.sklearn.log_model(model, "model")
+
+                # Creating metric artifact
+                metric_artifact = ClassificationMetricArtifact(
+                    f1_score=f1, precision_score=precision, recall_score=recall
+                )
+                return model, metric_artifact
+
+        except Exception as e:
+            raise VehicleInsuranceException(e, sys) from e
+
+    def initiate_model_trainer(self) -> ModelTrainerArtifact:
+        logging.info("Entered initiate_model_trainer method of ModelTrainer class")
+        """
+        Method Name :   initiate_model_trainer
+        Description :   This function initiates the model training steps
         
-    def train_model(self, x_train, y_train, x_test, y_test):
+        Output      :   Returns model trainer artifact
+        On Failure  :   Write an exception log and then raise an exception
+        """
         try:
-            logging.info("Starting model training")
-            models = {
-                "Random Forest": RandomForestClassifier(verbose=1),
-                "Gradient Boosting": GradientBoostingClassifier(verbose=1),
-                "AdaBoost": AdaBoostClassifier()
-            }
-            params = {
-                "Random Forest": {
-                    'criterion': ['gini', 'entropy'],
-                    'max_features': ['sqrt', 'log2'],
-                    'n_estimators': [100, 200, 300],  
-                    'max_depth': [None, 20, 30],  
-                    'min_samples_split': [2, 5],  
-                    'min_samples_leaf': [1, 2],  
-                    'class_weight': ['balanced', 'balanced_subsample']  
-                },
-                "Gradient Boosting": {
-                    'loss': ['log_loss'],
-                    'learning_rate': [.05, .01],
-                    'subsample': [0.7, 0.8, 0.9], 
-                    'criterion': ['friedman_mse'],
-                    'max_features': ['sqrt', 'log2'],
-                    'n_estimators': [100, 200, 300],  
-                    'max_depth': [4, 6, 8],  
-                    'min_samples_split': [2, 5],  
-                    'min_samples_leaf': [1, 2]
-                },
-                "AdaBoost": {
-                    'learning_rate': [.05, .01],
-                    'n_estimators': [100, 200, 300]
-                }
-            }
+            print(
+                "------------------------------------------------------------------------------------------------"
+            )
+            print("Starting Model Trainer Component")
+            # Load transformed train and test data
+            train_arr = load_numpy_array_data(
+                file_path=self.data_transformation_artifact.transformed_train_file_path
+            )
+            test_arr = load_numpy_array_data(
+                file_path=self.data_transformation_artifact.transformed_test_file_path
+            )
+            logging.info("train-test data loaded")
 
-            logging.info("Evaluating models")
-            model_report: dict = evaluate_model(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test,
-                                                models=models, param=params)
-            
-            best_model_score = max(sorted(model_report.values()))
-            best_model_name = list(model_report.keys())[list(model_report.values()).index(best_model_score)]
-            best_model = models[best_model_name]
-            logging.info(f"Best model selected: {best_model_name} with score {best_model_score}")
-            
-            y_train_pred = best_model.predict(x_train) 
-            classification_train_metric = get_classification_score(y_true=y_train, y_pred=y_train_pred)
-            
-            y_test_pred = best_model.predict(x_test)
-            classification_test_metric = get_classification_score(y_true=y_test, y_pred=y_test_pred)
-            
-            ## track the experiment with mlflow
-            self.track_mlflow(best_model,classification_train_metric)
-            self.track_mlflow(best_model,classification_test_metric)
+            # Train model and get metrics
+            trained_model, metric_artifact = self.get_model_object_and_report(
+                train=train_arr, test=test_arr
+            )
+            logging.info("Model object and artifact loaded.")
 
-            logging.info("Loading preprocessor")
-            preprocessor = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
-            
-            model_dir_path = os.path.dirname(self.model_trainer_config.trained_model_file_path)
-            os.makedirs(model_dir_path, exist_ok=True)
-            
-            logging.info("Saving trained model")
-            insurance_model = InsuranceModel(preprocessor=preprocessor, model=best_model)
-            save_object(self.model_trainer_config.trained_model_file_path, obj=insurance_model)
-            
-            save_object("models/model.pkl", best_model)
-            
+            # Load preprocessing object
+            preprocessing_obj = load_object(
+                file_path=self.data_transformation_artifact.transformed_object_file_path
+            )
+            logging.info("Preprocessing obj loaded.")
+
+            # Check if the model's accuracy meets the expected threshold
+            if (
+                accuracy_score(
+                    train_arr[:, -1], trained_model.predict(train_arr[:, :-1])
+                )
+                < self.model_trainer_config.expected_accuracy
+            ):
+                logging.info("No model found with score above the base score")
+                raise Exception("No model found with score above the base score")
+
+            # Save the final model object that includes both preprocessing and the trained model
+            logging.info("Saving new model as performace is better than previous one.")
+            my_model = MyModel(
+                preprocessing_object=preprocessing_obj,
+                trained_model_object=trained_model,
+            )
+            save_object(self.model_trainer_config.trained_model_file_path, my_model)
+            logging.info(
+                "Saved final model object that includes both preprocessing and the trained model"
+            )
+
+            # Create and return the ModelTrainerArtifact
             model_trainer_artifact = ModelTrainerArtifact(
                 trained_model_file_path=self.model_trainer_config.trained_model_file_path,
-                train_metric_artifact=classification_train_metric,
-                test_metric_artifact=classification_test_metric
+                metric_artifact=metric_artifact,
             )
-            
-            logging.info("Model training completed successfully")
+            logging.info(f"Model trainer artifact: {model_trainer_artifact}")
             return model_trainer_artifact
+
         except Exception as e:
-            logging.error(f"Error in training model: {str(e)}")
-            raise VehicleInsuranceException(e, sys)
-    
-    def initiate_model_trainer(self) -> ModelTrainerArtifact:
-        try:
-            logging.info("Initiating model training process")
-            train_file_path = self.data_transformation_artifact.transformed_train_file_path 
-            test_file_path = self.data_transformation_artifact.transformed_test_file_path
-            
-            logging.info("Loading training and testing arrays")
-            train_arr = load_numpy_array_data(train_file_path)
-            test_arr = load_numpy_array_data(test_file_path)
-            
-            x_train, y_train, x_test, y_test = (
-                train_arr[:, :-1],
-                train_arr[:, -1],
-                test_arr[:, :-1],
-                test_arr[:, -1],
-            )
-            
-            logging.info("Starting model training")
-            model_trainer_artifact = self.train_model(x_train, y_train, x_test, y_test)
-            logging.info("Model training process completed successfully")
-            return model_trainer_artifact
-        except Exception as e:
-            logging.error(f"Error in initiating model trainer: {str(e)}")
-            raise VehicleInsuranceException(e, sys)
+            raise VehicleInsuranceException(e, sys) from e
+

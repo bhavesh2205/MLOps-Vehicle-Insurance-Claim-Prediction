@@ -44,23 +44,24 @@ class DataTransformationConfig:
                                                      DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR,PREPROCSSING_OBJECT_FILE_NAME)
 
 
+@dataclass
+class ModelTrainerConfig:
+    model_trainer_dir: str = os.path.join(training_pipeline_config.artifact_dir, MODEL_TRAINER_DIR_NAME)
+    trained_model_file_path: str = os.path.join(model_trainer_dir, MODEL_TRAINER_TRAINED_MODEL_DIR, MODEL_FILE_NAME)
+    expected_accuracy: float = MODEL_TRAINER_EXPECTED_SCORE
+    model_config_file_path: str = MODEL_TRAINER_MODEL_CONFIG_FILE_PATH
+    _n_estimators = MODEL_TRAINER_N_ESTIMATORS         # 500
+    _min_samples_split = MODEL_TRAINER_MIN_SAMPLES_SPLIT  # 2
+    _min_samples_leaf = MODEL_TRAINER_MIN_SAMPLES_LEAF    # 1
+    _max_depth = MODEL_TRAINER_MAX_DEPTH               # None
+    _criterion = MODEL_TRAINER_CRITERION               # 'entropy'
+    _max_features = MODEL_TRAINER_MAX_FEATURES         # 'sqrt'
+    _bootstrap = MODEL_TRAINER_BOOTSTRAP               # True
+    _oob_score = MODEL_TRAINER_OOB_SCORE               # True
+    _random_state = MODEL_TRAINER_RANDOM_STATE         # 101
 
 
 
 
 
 
-
-class ModelTrainingConfig:
-    def __init__(self, training_pipeline_config: TrainingPipelineConfig):
-        self.model_trainer_dir : str = os.path.join(training_pipeline_config.artifact_dir, constant.MODEL_TRAINER_DIR_NAME)
-        self.trained_model_file_path : str = os.path.join(self.model_trainer_dir, constant.MODEL_TRAINER_TRAINED_MODEL_DIR, constant.MODEL_FILE_NAME)
-        self.expected_accuracy : float = constant.MODEL_TRAINER_EXPECTED_SCORE
-        self.overfitting_underfitting_threshold : float = constant.MODEL_TRAINER_OVERFITTING_UNDERFITTING_THRESHOLD 
-        
-
-class ModelStorageConfig:
-    def __init__(self):
-        self.local_model_dir = os.path.join(os.getcwd(), "saved_models")
-        self.local_model_path = os.path.join(self.local_model_dir, "trained_model.pkl")
-        os.makedirs(self.local_model_dir, exist_ok=True)
