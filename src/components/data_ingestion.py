@@ -1,5 +1,6 @@
 from src.exception.exception import VehicleInsuranceException
 from src.logging.logger import logging
+
 from src.constants import constant
 from src.entity.config_entity import DataIngestionConfig
 from src.entity.artifact_entity import DataIngestionArtifact
@@ -21,9 +22,7 @@ MONGO_DB_URL = os.getenv("MONGO_DB_URL")
 
 
 class DataIngestion:
-    def __init__(
-        self, data_ingestion_config: DataIngestionConfig = DataIngestionConfig
-    ):
+    def __init__(self, data_ingestion_config: DataIngestionConfig = DataIngestionConfig):
         """
         param data_ingestion_config: configuration for data ingestion
 
@@ -70,9 +69,7 @@ class DataIngestion:
         """
         logging.info("Entered split_data_into_train_test method of DataIngestion class")
         try:
-            train_set, test_set = train_test_split(
-                dataframe, test_size=self.data_ingestion_config.train_test_split_ratio
-            )
+            train_set, test_set = train_test_split(dataframe, test_size=self.data_ingestion_config.train_test_split_ratio)
             logging.info("Performed train-test split on the dataframe")
 
             dir_path = os.path.dirname(self.data_ingestion_config.training_file_path)
@@ -80,12 +77,8 @@ class DataIngestion:
 
             logging.info("Exporting train and test datasets to CSV files.")
 
-            train_set.to_csv(
-                self.data_ingestion_config.training_file_path, index=False, header=True
-            )
-            test_set.to_csv(
-                self.data_ingestion_config.testing_file_path, index=False, header=True
-            )
+            train_set.to_csv(self.data_ingestion_config.training_file_path, index=False, header=True)
+            test_set.to_csv(self.data_ingestion_config.testing_file_path, index=False, header=True)
 
             logging.info("Exporting completed successfully.")
         except Exception as e:

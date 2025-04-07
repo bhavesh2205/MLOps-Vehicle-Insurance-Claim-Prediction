@@ -3,6 +3,7 @@ import sys
 import pymongo
 import certifi
 from dotenv import load_dotenv
+load_dotenv()
 
 from src.exception.exception import VehicleInsuranceException
 from src.logging.logger import logging
@@ -10,8 +11,6 @@ from src.constants.constant import DATABASE_NAME, MONGODB_URL_KEY
 
 # Load the certificate authority file to avoid timeout errors when connecting to MongoDB
 ca = certifi.where()
-load_dotenv()
-
 
 class MongoDBClient:
     """

@@ -174,22 +174,6 @@ class DataTransformation:
             input_feature_test_arr = preprocessor.transform(input_feature_test_df)
             logging.info("Transformation done end to end to train-test df.")
             
-            # Apply SMOTE to training data
-            # input_feature_train_arr, target_feature_train_df = applysmote(input_feature_train_arr, target_feature_train_df)
-            # logging.info("SMOTE applied on training data")
-
-            # input_feature_test_arr, target_feature_test_df = applysmote(input_feature_test_arr, target_feature_test_df)
-            # logging.info("SMOTE applied on test data")
-            # logging.info("Applying SMOTEENN for handling imbalanced dataset.")
-            # smt = SMOTEENN(sampling_strategy="minority")
-            # input_feature_train_final, target_feature_train_final = smt.fit_resample(
-            #     input_feature_train_arr, target_feature_train_df
-            # )
-            # input_feature_test_final, target_feature_test_final = smt.fit_resample(
-            #     input_feature_test_arr, target_feature_test_df
-            # )
-            # logging.info("SMOTEENN applied to train-test df.")
-            # concatinate the arrays
             train_arr = np.c_[
                 input_feature_train_arr, np.array(target_feature_train_df)
             ]
@@ -210,6 +194,7 @@ class DataTransformation:
                 self.data_transformation_config.transformed_test_file_path,
                 array=test_arr,
             )
+            save_object("models/preprocessor.pkl", preprocessor)
             logging.info("Saving transformation object and transformed files.")
 
             feature_names = preprocessor.get_feature_names_out()

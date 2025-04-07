@@ -9,10 +9,18 @@ from_root
 certifi
 imblearn
 python-dotenv
+PyYAML
+boto3
+mypy-boto3-s3
+botocore
 ipykernel
 pymongo[srv]==3.11
 dill
 pyaml
 dagshub
+fastapi
+python-multipart
+uvicorn
+jinja2
 
 ##-e .

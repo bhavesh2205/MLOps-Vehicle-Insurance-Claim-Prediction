@@ -1,4 +1,4 @@
-from src.constants.constant import  SAVED_MODEL_DIR, MODEL_FILE_NAME
+from src.constants.constant import SAVED_MODEL_DIR, MODEL_FILE_NAME
 
 import os
 import sys

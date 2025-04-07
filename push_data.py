@@ -98,7 +98,7 @@ class VehicleDataExtract:
 
 
 if __name__ == "__main__":
-    file_path = "vehicle_data\car_insurance.csv"
+    file_path = "vehicle_data\insurance_data.csv"
     database = "vehicle"
     collection = "vehicleInsurance"
 

@@ -1,5 +1,4 @@
 import mlflow
-mlflow.set_tracking_uri()
 import sys, os
 
 from src.exception.exception import VehicleInsuranceException
@@ -19,7 +18,8 @@ from sklearn.ensemble import (
     RandomForestClassifier
 )
 
-
+import dagshub
+dagshub.init(repo_owner='imbhavesh7', repo_name='MLOps-Vehicle-Insurance-Claim-Prediction', mlflow=True)
 
 class ModelTrainer:
     def __init__(self, model_trainer_config: ModelTrainingConfig, data_transformation_artifact: DataTransformationArtifact):
@@ -51,32 +51,32 @@ class ModelTrainer:
                 "AdaBoost": AdaBoostClassifier()
             }
             params = {
-                    "Random Forest": {
-                        'criterion': ['gini', 'entropy'],
-                        'max_features': ['sqrt', 'log2'],
-                        'n_estimators': [50, 100, 150],  # Increased for better learning
-                        'max_depth': [10, 20, 30],  # Limit tree depth to reduce overfitting
-                        'min_samples_split': [2, 5, 10],  # Increase minimum samples per split
-                        'min_samples_leaf': [1, 2, 5]  # Increase leaf size to avoid overfitting
-                    },
-                    "Gradient Boosting": {
-                        'loss': ['log_loss'],
-                        'learning_rate': [.05, .01],  # Avoid very small learning rates
-                        'subsample': [0.6, 0.7, 0.8],  # Slightly reduce to introduce regularization
-                        'criterion': ['friedman_mse'],  # Focus on best criterion for boosting
-                        'max_features': ['sqrt', 'log2'],
-                        'n_estimators': [50, 100, 150],  # Increase trees moderately
-                        'max_depth': [3, 5, 7],  # Prevent deep trees
-                        'min_samples_split': [2, 5],  
-                        'min_samples_leaf': [1, 2]
-                    },
-                    "AdaBoost": {
-                        'learning_rate': [.05, .01],  # Reduce learning rate for stability
-                        'n_estimators': [50, 100]  # Moderate ensemble size
-                    }
-                    }
+                "Random Forest": {
+                    'criterion': ['gini', 'entropy'],
+                    'max_features': ['sqrt', 'log2'],
+                    'n_estimators': [100, 200, 300],  
+                    'max_depth': [None, 20, 30],  
+                    'min_samples_split': [2, 5],  
+                    'min_samples_leaf': [1, 2],  
+                    'class_weight': ['balanced', 'balanced_subsample']  
+                },
+                "Gradient Boosting": {
+                    'loss': ['log_loss'],
+                    'learning_rate': [.05, .01],
+                    'subsample': [0.7, 0.8, 0.9], 
+                    'criterion': ['friedman_mse'],
+                    'max_features': ['sqrt', 'log2'],
+                    'n_estimators': [100, 200, 300],  
+                    'max_depth': [4, 6, 8],  
+                    'min_samples_split': [2, 5],  
+                    'min_samples_leaf': [1, 2]
+                },
+                "AdaBoost": {
+                    'learning_rate': [.05, .01],
+                    'n_estimators': [100, 200, 300]
+                }
+            }
 
-        
             logging.info("Evaluating models")
             model_report: dict = evaluate_model(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test,
                                                 models=models, param=params)
@@ -105,6 +105,8 @@ class ModelTrainer:
             logging.info("Saving trained model")
             insurance_model = InsuranceModel(preprocessor=preprocessor, model=best_model)
             save_object(self.model_trainer_config.trained_model_file_path, obj=insurance_model)
+            
+            save_object("models/model.pkl", best_model)
             
             model_trainer_artifact = ModelTrainerArtifact(
                 trained_model_file_path=self.model_trainer_config.trained_model_file_path,

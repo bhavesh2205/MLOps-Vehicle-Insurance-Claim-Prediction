@@ -5,7 +5,6 @@ import pandas as pd
 import numpy as np
 
 from dotenv import load_dotenv
-
 load_dotenv()
 
 # For MongoDB connection
@@ -14,9 +13,9 @@ COLLECTION_NAME = "vehicleInsurance"
 MONGODB_URL_KEY = os.getenv("MONGO_DB_URL")
 
 TARGET_COLUMN = "outcome"
-PIPELINE_NAME: str = "src"
+PIPELINE_NAME: str = ""
 ARTIFACT_DIR: str = "artifacts"
-FILE_NAME: str = "car_insurance.csv"
+FILE_NAME: str = "insurance_data.csv"
 
 TRAIN_FILE_NAME: str = "train.csv"
 TEST_FILE_NAME: str = "test.csv"
@@ -34,7 +33,7 @@ DATA_INGESTION_DATABASE_NAME: str = "vehicle"
 DATA_INGESTION_DIR_NAME: str = "data_ingestion"
 DATA_INGESTION_FEATURE_STORE_DIR: str = "feature_store"
 DATA_INGESTION_INGESTED_DIR: str = "ingested"
-DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO: float = 0.2
+DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO: float = 0.25
 
 """
 Data Validation realted constant start with DATA_VALIDATION VAR NAME
