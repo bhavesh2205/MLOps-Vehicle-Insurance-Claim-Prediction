@@ -12,6 +12,7 @@ DATABASE_NAME = "vehicle"
 COLLECTION_NAME = "vehicleInsurance"
 MONGODB_URL_KEY = os.getenv("MONGO_DB_URL")
 
+# Pipeline related constant start with PIPELINE
 TARGET_COLUMN = "outcome"
 PIPELINE_NAME: str = ""
 ARTIFACT_DIR: str = "artifacts"
@@ -20,10 +21,16 @@ FILE_NAME: str = "insurance_data.csv"
 TRAIN_FILE_NAME: str = "train.csv"
 TEST_FILE_NAME: str = "test.csv"
 
+# Model related constant start with MODEL
 SCHEMA_FILE_PATH = os.path.join("schema", "schema.yaml")
 MODEL_FILE_NAME = "model.pkl"
 SAVED_MODEL_DIR = os.path.join("saved_models")
 PREPROCSSING_OBJECT_FILE_NAME = "preprocessing.pkl"
+
+# AWS related constant start with AWS
+AWS_ACCESS_KEY_ID_ENV_KEY = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY_ENV_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+REGION_NAME = "us-east-1"
 
 """
 Data Ingestion related constant start with DATA_INGESTION VAR NAME
@@ -67,3 +74,9 @@ MODEL_TRAINER_OOB_SCORE: bool = True
 MODEL_TRAINER_RANDOM_STATE: int = 101
 
 
+"""
+MODEL Evaluation related constants
+"""
+MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.02
+MODEL_BUCKET_NAME = "vehicle-insurance-model"
+MODEL_PUSHER_S3_KEY = "model-registry"
