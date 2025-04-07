@@ -27,14 +27,10 @@ class DataIngestionConfig:
     collection_name:str = DATA_INGESTION_COLLECTION_NAME
 
 
+@dataclass
 class DataValidationConfig:
-    def __init__(self, training_pipeline_config: TrainingPipelineConfig):
-        self.data_validation_dir = os.path.join(
-            training_pipeline_config.artifact_dir, constant.DATA_VALIDATION_DIR_NAME
-        )
-        self.validation_report_file_path = os.path.join(
-            self.data_validation_dir, constant.DATA_VALIDATION_REPORT_FILE_NAME
-        )
+    data_validation_dir: str = os.path.join(training_pipeline_config.artifact_dir, DATA_VALIDATION_DIR_NAME)
+    validation_report_file_path: str = os.path.join(data_validation_dir, DATA_VALIDATION_REPORT_FILE_NAME)
 
 
 class DataTransformationConfig:

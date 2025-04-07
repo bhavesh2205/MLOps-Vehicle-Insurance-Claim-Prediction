@@ -1,5 +1,6 @@
 from src.exception.exception import VehicleInsuranceException
 from src.logging.logger import logging
+
 from src.utils.main_utils import read_yaml_file
 from src.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
 from src.entity.config_entity import DataValidationConfig
@@ -12,10 +13,7 @@ from pandas import DataFrame
 
 
 class DataValidation:
-    def __init__(self,
-        data_ingestion_artifact: DataIngestionArtifact,
-        data_validation_config: DataValidationConfig,
-    ):
+    def __init__(self,data_ingestion_artifact: DataIngestionArtifact,data_validation_config: DataValidationConfig):
         """
         param data_ingestion_artifact: Output reference of data ingestion artifact stage
         param data_validation_config: configuration for data validation
@@ -35,9 +33,8 @@ class DataValidation:
         try:
             number_of_columns = len(self._schema_config["columns"])
             logging.info(f"Number of columns in the schema: {number_of_columns}")
-            logging.info(
-                f"Number of columns in the dataframe: {len(dataframe.columns)}"
-            )
+            logging.info(f"Number of columns in the dataframe: {len(dataframe.columns)}")
+            
             if len(dataframe.columns) == number_of_columns:
                 return True
             else:
@@ -73,12 +70,7 @@ class DataValidation:
                     f"Missing categorical column: {missing_categorical_columns}"
                 )
 
-            return (
-                False
-                if len(missing_categorical_columns) > 0
-                or len(missing_numerical_columns) > 0
-                else True
-            )
+            return False if len(missing_categorical_columns) > 0 or len(missing_numerical_columns) > 0 else True
         except Exception as e:
             raise VehicleInsuranceException(e, sys)
 
@@ -123,9 +115,7 @@ class DataValidation:
             if not status:
                 validation_error_message += f"Columns are missing in test dataframe. "
             else:
-                logging.info(
-                    f"All required columns present in testing dataframe: {status}"
-                )
+                logging.info(f"All required columns present in testing dataframe: {status}")
 
             # Validating col dtype for train/test df
             status = self.is_column_exist(dataframe=train_df)
@@ -153,9 +143,7 @@ class DataValidation:
             )
 
             # Ensure the directory for validation_report_file_path exists
-            report_dir = os.path.dirname(
-                self.data_validation_config.validation_report_file_path
-            )
+            report_dir = os.path.dirname(self.data_validation_config.validation_report_file_path)
             os.makedirs(report_dir, exist_ok=True)
 
             # Save validation status and message to a JSON file
@@ -164,9 +152,7 @@ class DataValidation:
                 "message": validation_error_message.strip(),
             }
 
-            with open(
-                self.data_validation_config.validation_report_file_path, "w"
-            ) as report_file:
+            with open(self.data_validation_config.validation_report_file_path, "w") as report_file:
                 json.dump(validation_report, report_file, indent=4)
 
             logging.info("Data validation artifact created and saved to JSON file.")

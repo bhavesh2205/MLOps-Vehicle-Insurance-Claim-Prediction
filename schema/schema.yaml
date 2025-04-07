@@ -12,9 +12,7 @@ columns:
   - children: int
   - postal_code: int
   - annual_mileage: float
-  - vehicle_type: category
   - speeding_violations: int
-  - duis: int
   - past_accidents: int
   - outcome: int
 
@@ -29,7 +27,6 @@ numerical_columns:
   - postal_code
   - annual_mileage
   - speeding_violations
-  - duis
   - past_accidents
   - outcome
 
@@ -39,7 +36,6 @@ categorical_columns:
   - education
   - income
   - vehicle_year
-  - vehicle_type
 
 ordinal_features:
   - driving_experience
@@ -48,7 +44,6 @@ ordinal_features:
 
 onehot_features:
   - vehicle_year
-  - vehicle_type
 
 drop_columns:
   - id
