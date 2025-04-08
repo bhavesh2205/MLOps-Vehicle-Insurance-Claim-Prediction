@@ -56,13 +56,11 @@ class ModelEvaluation:
                 bucket_name=bucket_name, model_path=model_path
             )
 
-            if model_estimator.is_model_present(model_path=model_path):
+            if model_estimator.is_model_present():
                 return model_estimator
             return None
         except Exception as e:
             raise VehicleInsuranceException(e, sys)
-
-          
 
     def evaluate_model(self) -> EvaluateModelResponse:
         """
@@ -83,26 +81,38 @@ class ModelEvaluation:
 
             logging.info("Transformed test data loaded and ready for prediction...")
 
+            # Load trained model
             trained_model = load_object(
                 file_path=self.model_trainer_artifact.trained_model_file_path
             )
             logging.info("Trained model loaded/exists.")
-            trained_model_f1_score = (
-                self.model_trainer_artifact.metric_artifact.f1_score
-            )
+
+            # Get predictions from new trained model directly from numpy array
+            # This is safe because MyModel.predict uses preprocessing_object.transform
+            # which can handle numpy arrays directly
+            y_hat_trained_model = trained_model.trained_model_object.predict(x)
+            trained_model_f1_score = f1_score(y, y_hat_trained_model)
             logging.info(f"F1_Score for this model: {trained_model_f1_score}")
 
             best_model_f1_score = None
             best_model = self.get_best_model()
             if best_model is not None:
                 logging.info(f"Computing F1_Score for production model..")
-                y_hat_best_model = best_model.predict(x)
+                # Use the trained_model_object directly to bypass the preprocessing steps
+                # that are causing column name issues
+                if best_model.loaded_model is None:
+                    best_model.loaded_model = best_model.load_model()
+                y_hat_best_model = best_model.loaded_model.trained_model_object.predict(
+                    x
+                )
                 best_model_f1_score = f1_score(y, y_hat_best_model)
                 logging.info(
                     f"F1_Score-Production Model: {best_model_f1_score}, F1_Score-New Trained Model: {trained_model_f1_score}"
                 )
 
-            tmp_best_model_score = (0 if best_model_f1_score is None else best_model_f1_score)
+            tmp_best_model_score = (
+                0 if best_model_f1_score is None else best_model_f1_score
+            )
             result = EvaluateModelResponse(
                 trained_model_f1_score=trained_model_f1_score,
                 best_model_f1_score=best_model_f1_score,

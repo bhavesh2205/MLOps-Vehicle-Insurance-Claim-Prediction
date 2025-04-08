@@ -126,6 +126,7 @@ class DataTransformation:
         except Exception as e:
             logging.exception("Error in converting Credit Score.")
             raise VehicleInsuranceException(e, sys)
+    
 
     def initiate_data_transformation(self) -> DataTransformationArtifact:
         """

@@ -60,7 +60,8 @@ class ModelTrainer:
             # Start MLflow run
             with mlflow.start_run():
                 # Log model parameters
-                mlflow.log_params({
+                mlflow.log_params(
+                    {
                         "n_estimators": self.model_trainer_config._n_estimators,
                         "min_samples_split": self.model_trainer_config._min_samples_split,
                         "min_samples_leaf": self.model_trainer_config._min_samples_leaf,
@@ -70,21 +71,21 @@ class ModelTrainer:
                         "bootstrap": self.model_trainer_config._bootstrap,
                         "oob_score": self.model_trainer_config._oob_score,
                         "random_state": self.model_trainer_config._random_state,
-                    })
+                    }
+                )
 
                 # Initialize RandomForestClassifier with specified parameters
                 model = RandomForestClassifier(
-                            n_estimators=self.model_trainer_config._n_estimators,
-                            min_samples_split=self.model_trainer_config._min_samples_split,
-                            min_samples_leaf=self.model_trainer_config._min_samples_leaf,
-                            max_depth=self.model_trainer_config._max_depth,
-                            criterion=self.model_trainer_config._criterion,
-                            max_features=self.model_trainer_config._max_features,
-                            bootstrap=self.model_trainer_config._bootstrap,
-                            oob_score=self.model_trainer_config._oob_score,
-                            random_state=self.model_trainer_config._random_state,
-                        )
-
+                    n_estimators=self.model_trainer_config._n_estimators,
+                    min_samples_split=self.model_trainer_config._min_samples_split,
+                    min_samples_leaf=self.model_trainer_config._min_samples_leaf,
+                    max_depth=self.model_trainer_config._max_depth,
+                    criterion=self.model_trainer_config._criterion,
+                    max_features=self.model_trainer_config._max_features,
+                    bootstrap=self.model_trainer_config._bootstrap,
+                    oob_score=self.model_trainer_config._oob_score,
+                    random_state=self.model_trainer_config._random_state,
+                )
 
                 # Fit the model
                 logging.info("Model training going on...")
@@ -186,4 +187,3 @@ class ModelTrainer:
 
         except Exception as e:
             raise VehicleInsuranceException(e, sys) from e
-
