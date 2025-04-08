@@ -61,7 +61,7 @@ graph TD
     MP -->|Trigger| CICD[CI/CD Pipeline]
     CICD -->|Build| ECR[AWS ECR]
     ECR -->|Deploy| EC2[EC2 Instance]
-    EC2 -->|Serve| APP[Flask Web App]
+    EC2 -->|Serve| APP[FastAPI Web App]
     
     classDef databases fill:#ffcc80,stroke:#ff8f00,stroke-width:2px
     classDef pipeline fill:#90caf9,stroke:#1976d2,stroke-width:1px
