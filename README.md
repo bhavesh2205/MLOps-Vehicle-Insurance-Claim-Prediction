@@ -1,21 +1,5 @@
 # MLOps - Vehicle Insurance Claim Prediction
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10-blue?style=for-the-badge&logo=python" alt="Python 3.10"/>
-  <img src="https://img.shields.io/badge/AWS-Cloud-orange?style=for-the-badge&logo=amazon-aws" alt="AWS"/>
-  <img src="https://img.shields.io/badge/Docker-Container-blue?style=for-the-badge&logo=docker" alt="Docker"/>
-  <img src="https://img.shields.io/badge/GitHub-Actions-success?style=for-the-badge&logo=github-actions" alt="GitHub Actions"/>
-  <img src="https://img.shields.io/badge/MongoDB-Atlas-green?style=for-the-badge&logo=mongodb" alt="MongoDB"/>
-</p>
-
-## Overview
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Enterprise--Grade-Architecture-blue?style=for-the-badge" alt="Enterprise-Grade"/>
-  <img src="https://img.shields.io/badge/Cloud--Native-Implementation-orange?style=for-the-badge" alt="Cloud-Native"/>
-  <img src="https://img.shields.io/badge/Production--Ready-Solution-success?style=for-the-badge" alt="Production-Ready"/>
-</p>
-
 This comprehensive, enterprise-grade MLOps project revolutionizes vehicle insurance claim prediction through a sophisticated machine learning pipeline with state-of-the-art automation. The solution orchestrates the entire ML lifecycle from data ingestion to model deployment, creating a seamless flow of operations that transforms raw insurance data into actionable predictions.
 
 ### Why This Matters
