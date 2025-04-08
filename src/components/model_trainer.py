@@ -2,8 +2,6 @@ import sys
 from typing import Tuple
 
 import numpy as np
-import mlflow
-import mlflow.sklearn
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
@@ -31,9 +29,6 @@ class ModelTrainer:
         """
         self.data_transformation_artifact = data_transformation_artifact
         self.model_trainer_config = model_trainer_config
-        # Initialize MLflow tracking
-        mlflow.set_tracking_uri("http://localhost:5000")
-        mlflow.set_experiment("Vehicle Insurance Claim Prediction")
 
     def get_model_object_and_report(
         self, train: np.array, test: np.array
@@ -57,66 +52,36 @@ class ModelTrainer:
             )
             logging.info("train-test split done.")
 
-            # Start MLflow run
-            with mlflow.start_run():
-                # Log model parameters
-                mlflow.log_params(
-                    {
-                        "n_estimators": self.model_trainer_config._n_estimators,
-                        "min_samples_split": self.model_trainer_config._min_samples_split,
-                        "min_samples_leaf": self.model_trainer_config._min_samples_leaf,
-                        "max_depth": self.model_trainer_config._max_depth,
-                        "criterion": self.model_trainer_config._criterion,
-                        "max_features": self.model_trainer_config._max_features,
-                        "bootstrap": self.model_trainer_config._bootstrap,
-                        "oob_score": self.model_trainer_config._oob_score,
-                        "random_state": self.model_trainer_config._random_state,
-                    }
-                )
+            # Initialize RandomForestClassifier with specified parameters
+            model = RandomForestClassifier(
+                n_estimators=self.model_trainer_config._n_estimators,
+                min_samples_split=self.model_trainer_config._min_samples_split,
+                min_samples_leaf=self.model_trainer_config._min_samples_leaf,
+                max_depth=self.model_trainer_config._max_depth,
+                criterion=self.model_trainer_config._criterion,
+                max_features=self.model_trainer_config._max_features,
+                bootstrap=self.model_trainer_config._bootstrap,
+                oob_score=self.model_trainer_config._oob_score,
+                random_state=self.model_trainer_config._random_state,
+            )
 
-                # Initialize RandomForestClassifier with specified parameters
-                model = RandomForestClassifier(
-                    n_estimators=self.model_trainer_config._n_estimators,
-                    min_samples_split=self.model_trainer_config._min_samples_split,
-                    min_samples_leaf=self.model_trainer_config._min_samples_leaf,
-                    max_depth=self.model_trainer_config._max_depth,
-                    criterion=self.model_trainer_config._criterion,
-                    max_features=self.model_trainer_config._max_features,
-                    bootstrap=self.model_trainer_config._bootstrap,
-                    oob_score=self.model_trainer_config._oob_score,
-                    random_state=self.model_trainer_config._random_state,
-                )
+            # Fit the model
+            logging.info("Model training going on...")
+            model.fit(x_train, y_train)
+            logging.info("Model training done.")
 
-                # Fit the model
-                logging.info("Model training going on...")
-                model.fit(x_train, y_train)
-                logging.info("Model training done.")
+            # Predictions and evaluation metrics
+            y_pred = model.predict(x_test)
+            accuracy = accuracy_score(y_test, y_pred)
+            f1 = f1_score(y_test, y_pred)
+            precision = precision_score(y_test, y_pred)
+            recall = recall_score(y_test, y_pred)
 
-                # Predictions and evaluation metrics
-                y_pred = model.predict(x_test)
-                accuracy = accuracy_score(y_test, y_pred)
-                f1 = f1_score(y_test, y_pred)
-                precision = precision_score(y_test, y_pred)
-                recall = recall_score(y_test, y_pred)
-
-                # Log metrics
-                mlflow.log_metrics(
-                    {
-                        "accuracy": accuracy,
-                        "f1_score": f1,
-                        "precision": precision,
-                        "recall": recall,
-                    }
-                )
-
-                # Log model
-                mlflow.sklearn.log_model(model, "model")
-
-                # Creating metric artifact
-                metric_artifact = ClassificationMetricArtifact(
-                    f1_score=f1, precision_score=precision, recall_score=recall
-                )
-                return model, metric_artifact
+            # Creating metric artifact
+            metric_artifact = ClassificationMetricArtifact(
+                f1_score=f1, precision_score=precision, recall_score=recall
+            )
+            return model, metric_artifact
 
         except Exception as e:
             raise VehicleInsuranceException(e, sys) from e

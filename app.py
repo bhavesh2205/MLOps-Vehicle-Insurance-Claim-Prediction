@@ -11,6 +11,7 @@ from typing import Optional
 # Importing constants and pipeline modules from the project
 from src.constants.constant import APP_HOST, APP_PORT
 from src.pipeline.prediction_pipeline import VehicleData, VehicleDataClassifier
+from src.pipeline.training_pipeline import TrainPipeline
 
 # Initialize FastAPI application
 app = FastAPI()
@@ -85,8 +86,36 @@ async def index(request: Request):
     """
     return templates.TemplateResponse(
         "vehicledata.html",
-        {"request": request, "context": "Rendering"},
+        {"request": request, "context": "Rendering", "active_tab": "predict"},
     )
+
+
+# Route to render the training page
+@app.get("/train-view")
+async def train_view(request: Request):
+    """
+    Renders the model training page.
+    """
+    return templates.TemplateResponse(
+        "vehicledata.html", {"request": request, "active_tab": "train"}
+    )
+
+
+# Route to trigger the model training process
+@app.get("/train")
+async def train_route_client():
+    """
+    Endpoint to initiate the model training pipeline.
+    """
+    try:
+        train_pipeline = TrainPipeline()
+        train_pipeline.run_pipeline()
+        return RedirectResponse(url="/train-view?status=success", status_code=303)
+
+    except Exception as e:
+        return RedirectResponse(
+            url=f"/train-view?status=error&message={str(e)}", status_code=303
+        )
 
 
 # Route to handle form submission and make predictions
@@ -130,7 +159,7 @@ async def predictRouteClient(request: Request):
         # Render the same HTML page with the prediction result
         return templates.TemplateResponse(
             "vehicledata.html",
-            {"request": request, "context": status},
+            {"request": request, "context": status, "active_tab": "predict"},
         )
 
     except Exception as e:
