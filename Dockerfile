@@ -1,18 +1,19 @@
-# Use an official lightweight Python image
-FROM python:3.10
+# Use an official Python 3.10 image from Docker Hub
+FROM python:3.10-slim-buster
 
 # Set the working directory
 WORKDIR /app
 
-# Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy your application code
+COPY . /app
 
-# Copy the application code
-COPY . .
+# Install the dependencies
+RUN pip install --no-cache-dir python-dotenv
+RUN pip install --no-cache-dir -r requirements.txt 
 
-# Expose the port
-EXPOSE 8000
+# Expose the port FastAPI will run on
+EXPOSE 5000
 
-# Start the app (use gunicorn for FastAPI/Flask)
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "main:app"]
+# Command to run the FastAPI app
+CMD ["python3", "app.py"]
+# CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5000"]

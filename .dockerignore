@@ -1,0 +1,16 @@
+# Exclude the below files
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+logs/
+.git/
+.gitignore
+*.egg-info/
+*.dist-info/
+run_pipeline.py
+README.md
+LICENSE
+analysis/
+artifact 
