@@ -28,7 +28,7 @@ In the competitive insurance industry, accurately predicting vehicle insurance c
 
 ### Technical Excellence
 
-Our solution stands out by implementing industry best practices in MLOps:
+The solution stands out by implementing industry best practices in MLOps:
 
 - **Cloud-First Architecture** leveraging AWS services for scalability and reliability
 - **Containerization & Orchestration** ensuring consistent environments across all stages
@@ -87,30 +87,6 @@ graph TD
     class DI,DV,DT,MT,ME,MP pipeline
     class ECR,EC2,APP,CICD deployment
 ```
-
-## Key Features
-
-### MLOps Excellence
-- **End-to-End Pipeline Automation** - Streamlined workflow from data ingestion to model deployment
-- **Reproducible ML Workflows** - Consistent environment and process across development and production
-- **Automated Model Evaluation** - Performance comparison against previously deployed models
-- **Configurable Performance Thresholds** - Customizable model acceptance criteria
-
-### Cloud-Native Architecture
-- **AWS Infrastructure** - S3 for model registry, ECR for container registry, EC2 for deployment
-- **MongoDB Atlas Integration** - Cloud-based data storage with flexible schema
-- **Containerized Deployment** - Docker for consistent environments and simplified scaling
-
-### Engineering Best Practices
-- **Modular Component Design** - Independent, reusable pipeline stages for flexibility
-- **CI/CD with GitHub Actions** - Automated testing, building, and deployment workflows
-- **Self-Hosted Runners** - Custom CI/CD execution environment for greater control
-- **Comprehensive Logging & Monitoring** - Error tracking and performance monitoring
-
-### User Experience
-- **Interactive Web Interface** - User-friendly application for predictions and model management
-- **Dynamic Model Training** - On-demand training capability through intuitive UI
-- **Real-time Prediction Service** - Fast, reliable prediction API for integration
 
 ## Getting Started
 
