@@ -63,9 +63,9 @@ graph TD
     ECR -->|Deploy| EC2[EC2 Instance]
     EC2 -->|Serve| APP[FastAPI Web App]
     
-    classDef databases fill:#ffcc80,stroke:#ff8f00,stroke-width:2px
-    classDef pipeline fill:#90caf9,stroke:#1976d2,stroke-width:1px
-    classDef deployment fill:#a5d6a7,stroke:#388e3c,stroke-width:1px
+    classDef databases fill:#ffcc80,stroke:#ff8f00,stroke-width:2px,color:#000000,font-weight:bold
+    classDef pipeline fill:#90caf9,stroke:#1976d2,stroke-width:1px,color:#000000,font-weight:bold
+    classDef deployment fill:#a5d6a7,stroke:#388e3c,stroke-width:1px,color:#000000,font-weight:bold
     
     class MongoDB,S3 databases
     class DI,DV,DT,MT,ME,MP pipeline
