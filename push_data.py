@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MONGO_DB_URL = os.getenv("MONGO_DB_URL")
-print(MONGO_DB_URL)  
+MONGODB_URL_KEY = os.getenv("MONGODB_URL_KEY")
+print(MONGODB_URL_KEY)  
 
 import certifi
 ca = certifi.where()
