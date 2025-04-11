@@ -10,7 +10,7 @@ load_dotenv()
 # For MongoDB connection
 DATABASE_NAME = "vehicle"
 COLLECTION_NAME = "vehicleInsurance"
-MONGODB_URL_KEY = os.getenv("MONGO_DB_URL")
+MONGODB_URL_KEY = os.getenv("MONGODB_URL_KEY")
 
 # Pipeline related constant start with PIPELINE
 TARGET_COLUMN = "outcome"
