@@ -4,19 +4,17 @@ import json
 import pandas as pd
 import pymongo
 import numpy as np
-from src.logging import logger
+from src.logging.logger import logging
 from src.exception.exception import VehicleInsuranceException
 from dotenv import load_dotenv
 
 load_dotenv()
 
 MONGO_DB_URL = os.getenv("MONGO_DB_URL")
-print(MONGO_DB_URL)  # printing for verifying if it's able to retrieve from .env or not
+print(MONGO_DB_URL)  
 
 import certifi
-
 ca = certifi.where()
-
 
 class VehicleDataExtract:
     """
@@ -58,7 +56,7 @@ class VehicleDataExtract:
             data = pd.read_csv(file_path)
             data.reset_index(drop=True, inplace=True)
             records = list(json.loads(data.T.to_json()).values())
-            logger.logging.info("Successfully converted data from csv to json")
+            logging.info("Successfully converted data from csv to json")
             return records
 
         except Exception as e:
@@ -88,9 +86,9 @@ class VehicleDataExtract:
             self.database = self.mongo_client[self.database]
 
             self.collection = self.database[self.collection]
-            logger.logging.info("Started inserting data into MongoDB")
+            logging.info("Started inserting data into MongoDB")
             self.collection.insert_many(self.records)
-            logger.logging.info("Inserted data into MongoDB")
+            logging.info("Inserted data into MongoDB")
             return len(self.records)
 
         except Exception as e:

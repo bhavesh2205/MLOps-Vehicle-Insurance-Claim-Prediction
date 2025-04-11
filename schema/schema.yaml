@@ -2,12 +2,12 @@ columns:
   - id: int
   - age: int
   - gender: int
-  - driving_experience: category
-  - education: category
-  - income: category
+  - driving_experience: object
+  - education: object
+  - income: object
   - credit_score: float
   - vehicle_ownership: int
-  - vehicle_year: category
+  - vehicle_year: object
   - married: int
   - children: int
   - postal_code: int

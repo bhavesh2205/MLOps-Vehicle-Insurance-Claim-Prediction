@@ -25,7 +25,7 @@ The system integrates MongoDB Atlas for flexible data storage, AWS S3 for model 
 ## App Screenshot
 
 <p align="center">
-  <img src="assets/Screenshot-app.png.jpg" alt="Prediction Dashboard" width="800"/>
+  <img src="assets/fastapi_ui.png" alt="Prediction Dashboard" width="800"/>
 </p>
 
 ## Tech Stack

@@ -6,6 +6,7 @@ from typing import Optional
 from src.configuration.mongodb_connection import MongoDBClient
 from src.constants.constant import DATABASE_NAME
 from src.exception.exception import VehicleInsuranceException
+from src.logging.logger import logging
 
 
 class FetchData:
@@ -22,9 +23,7 @@ class FetchData:
         except Exception as e:
             raise VehicleInsuranceException(e, sys)
 
-    def export_collection_as_dataframe(
-        self, collection_name: str, database_name: Optional[str] = None
-    ) -> pd.DataFrame:
+    def export_collection_as_dataframe(self, collection_name: str, database_name: Optional[str] = None) -> pd.DataFrame:
         """
         Exports an entire MongoDB collection as a pandas DataFrame.
 

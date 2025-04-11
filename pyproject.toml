@@ -1,5 +1,5 @@
 [project]
-name = "src"
+name = "Vehicle_Insurance_Claim_Prediction"
 version = "0.0.1"
 description = "MLOps - Vehicle Insurance Claim Prediction"
 authors = [{name = "Bhavesh Patil", email = "imbhavesh7@gmail.com"}]
