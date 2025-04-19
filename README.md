@@ -48,6 +48,10 @@ The system integrates MongoDB Atlas for flexible data storage, AWS S3 for model 
 
 ## MLOps Architecture
 
+<p align="center">
+  <img src="assets/mlops_workflow.png" alt="Prediction Dashboard" width="800"/>
+</p>
+
 ```mermaid
 graph TD
     MongoDB[MongoDB Atlas] -->|Data Source| DI[Data Ingestion]
