@@ -49,32 +49,8 @@ The system integrates MongoDB Atlas for flexible data storage, AWS S3 for model 
 ## MLOps Architecture
 
 <p align="center">
-  <img src="assets/mlops_workflow.png" alt="Prediction Dashboard" width="800"/>
+  <img src="assets/mlops_workflow.png" alt="Prediction Dashboard" width="850"/>
 </p>
-
-```mermaid
-graph TD
-    MongoDB[MongoDB Atlas] -->|Data Source| DI[Data Ingestion]
-    DI --> DV[Data Validation]
-    DV --> DT[Data Transformation]
-    DT --> MT[Model Trainer]
-    MT --> ME[Model Evaluation]
-    S3[(AWS S3)] -->|Existing Model| ME
-    ME -->|If Better| MP[Model Pusher]
-    MP -->|Model Registry| S3
-    MP -->|Trigger| CICD[CI/CD Pipeline]
-    CICD -->|Build| ECR[AWS ECR]
-    ECR -->|Deploy| EC2[EC2 Instance]
-    EC2 -->|Serve| APP[FastAPI Web App]
-    
-    classDef databases fill:#ffcc80,stroke:#ff8f00,stroke-width:2px,color:#000000,font-weight:bold
-    classDef pipeline fill:#90caf9,stroke:#1976d2,stroke-width:1px,color:#000000,font-weight:bold
-    classDef deployment fill:#a5d6a7,stroke:#388e3c,stroke-width:1px,color:#000000,font-weight:bold
-    
-    class MongoDB,S3 databases
-    class DI,DV,DT,MT,ME,MP pipeline
-    class ECR,EC2,APP,CICD deployment
-```
 
 ## Getting Started
 
